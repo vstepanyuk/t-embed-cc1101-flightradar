@@ -1,0 +1,22 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "cargo": {
+          "target": "xtensa-esp32s3-none-elf",
+          "allTargets": false,
+          "extraEnv": {
+            "RUSTUP_TOOLCHAIN": "esp"
+          }
+        },
+        "check": {
+          "allTargets": false,
+          "extraArgs": [
+            "--target",
+            "xtensa-esp32s3-none-elf"
+          ]
+        }
+      }
+    }
+  }
+}

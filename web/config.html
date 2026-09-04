@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <title>ESP Radar</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { font: 18px sans-serif; background: #06140a; color: #d8ffe0; max-width: 520px; margin: 2em auto; padding: 0 1em; }
+    input { font: inherit; width: 100%; box-sizing: border-box; margin: .3em 0 1em; padding: .5em; }
+    button { font: inherit; padding: .6em 1.2em; background: #59d878; color: #06140a; border: 0; }
+    h1 { color: #59d878; }
+    .error { color: #ff8578; border: 1px solid #ff8578; padding: .6em; }
+  </style>
+</head>
+<body>
+  <h1>ESP Radar</h1>
+  <form method="post" action="/">
+    <label>Center latitude
+      <input name="lat" type="number" step="0.0001" min="-90" max="90" value="49.3264" required>
+    </label>
+    <label>Center longitude
+      <input name="lon" type="number" step="0.0001" min="-180" max="180" value="12.1097" required>
+    </label>
+    <label>Radius (km)
+      <input name="radius" type="number" step="1" min="1" max="250" value="50" required>
+    </label>
+    <label>Timezone (fixed UTC offset)
+      <select name="timezone" required>
+        <option value="-720">UTC−12:00</option>
+        <option value="-660">UTC−11:00</option>
+        <option value="-600">UTC−10:00</option>
+        <option value="-570">UTC−09:30</option>
+        <option value="-540">UTC−09:00</option>
+        <option value="-480">UTC−08:00</option>
+        <option value="-420">UTC−07:00</option>
+        <option value="-360">UTC−06:00</option>
+        <option value="-300">UTC−05:00</option>
+        <option value="-240">UTC−04:00</option>
+        <option value="-210">UTC−03:30</option>
+        <option value="-180">UTC−03:00</option>
+        <option value="-120">UTC−02:00</option>
+        <option value="-60">UTC−01:00</option>
+        <option value="0">UTC±00:00</option>
+        <option value="60">UTC+01:00</option>
+        <option value="120">UTC+02:00</option>
+        <option value="180">UTC+03:00</option>
+        <option value="210">UTC+03:30</option>
+        <option value="240">UTC+04:00</option>
+        <option value="270">UTC+04:30</option>
+        <option value="300">UTC+05:00</option>
+        <option value="330">UTC+05:30</option>
+        <option value="345">UTC+05:45</option>
+        <option value="360">UTC+06:00</option>
+        <option value="390">UTC+06:30</option>
+        <option value="420">UTC+07:00</option>
+        <option value="480">UTC+08:00</option>
+        <option value="525">UTC+08:45</option>
+        <option value="540">UTC+09:00</option>
+        <option value="570">UTC+09:30</option>
+        <option value="600">UTC+10:00</option>
+        <option value="630">UTC+10:30</option>
+        <option value="660">UTC+11:00</option>
+        <option value="720">UTC+12:00</option>
+        <option value="780">UTC+13:00</option>
+        <option value="840">UTC+14:00</option>
+      </select>
+    </label>
+  <button type="submit">Save configuration</button>
+  </form>
+  <p id="config-error" class="error" hidden></p>
+  <p>More radar settings can be added here later.</p>
+  <script>
+    const errorElement = document.getElementById('config-error');
+    const showError = message => {
+      errorElement.textContent = message;
+      errorElement.hidden = false;
+    };
+
+    fetch('/api/config')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(config => {
+        document.querySelector('[name=lat]').value = Number(config.center_latitude).toFixed(4);
+        document.querySelector('[name=lon]').value = Number(config.center_longitude).toFixed(4);
+        document.querySelector('[name=radius]').value = config.radius_km;
+        document.querySelector('[name=timezone]').value = config.timezone_offset_minutes;
+      })
+      .catch(error => showError(`Could not load configuration: ${error.message}`));
+  </script>
+</body>
+</html>
